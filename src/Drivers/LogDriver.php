@@ -239,8 +239,11 @@ abstract class LogDriver
             return;
         }
 
-        $line = implode(' ', $log->toLogFileArray()) . "\n";
-        file_put_contents($this->logFile, $line, FILE_APPEND);
+        file_put_contents(
+            $this->logFile,
+            json_encode($log->toLogFileArray()) . "\n",
+            FILE_APPEND
+        );
     }
 
     public function with($arguments)
