@@ -20,7 +20,7 @@ class MysqlLogDriver extends LogDriver
         $lastInsertId = DB::table($this->getTableName())
                           ->insertGetId($row);
 
-        return $this->find($lastInsertId);
+        return $lastInsertId;
 
     }
 
