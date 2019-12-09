@@ -298,7 +298,7 @@ abstract class LogDriver
                     function ($item) use ($relation, $relationKey, $relationList) {
                         if (optional($item)->{$relation['foreign_id']})
                         {
-                            $item->addValue($relationKey, $relationList->get($item->{$relation['foreign_id']}));
+                            $item->setAttribute($relationKey, $relationList->get($item->{$relation['foreign_id']}));
                         }
                     }
                 );
