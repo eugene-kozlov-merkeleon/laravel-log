@@ -8,7 +8,7 @@ use Merkeleon\Log\Exceptions\LogException;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 
-abstract class Log
+abstract class Log implements \ArrayAccess
 {
     protected static $attributes = [
         'uuid'       => 'uuid',
@@ -74,6 +74,16 @@ abstract class Log
 
     public function __get($name)
     {
+        return $this->getAttribute($name);
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     * @throws LogException
+     */
+    protected function getAttribute($name)
+    {
         if (!in_array($name, static::getAttributes()))
         {
             throw new LogException('Attribute ' . $name . ' not exists');
@@ -101,14 +111,20 @@ abstract class Log
         return $this->values;
     }
 
-    public function addValue($name, $value)
+    /**
+     * @param $key
+     * @param $value
+     * @return $this
+     * @throws LogException
+     */
+    public function setAttribute($key, $value)
     {
-        if (!in_array($name, static::getAttributes()))
+        if (!in_array($key, static::getAttributes()))
         {
-            throw new LogException('Attribute ' . $name . ' not exists');
+            throw new LogException('Attribute ' . $key . ' not exists');
         }
 
-        $this->values[$name] = $value;
+        $this->values[$key] = $value;
 
         return $this;
     }
@@ -157,5 +173,50 @@ abstract class Log
     public static function getRelations()
     {
         return static::$relations;
+    }
+
+    /**
+     * Determine if the given attribute exists.
+     *
+     * @param  mixed  $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return ! is_null($this->getAttribute($offset));
+    }
+
+    /**
+     * Get the value for a given offset.
+     *
+     * @param  mixed  $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->getAttribute($offset);
+    }
+
+    /**
+     * Set the value for a given offset.
+     *
+     * @param  mixed  $offset
+     * @param  mixed  $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->setAttribute($offset, $value);
+    }
+
+    /**
+     * Unset the value for a given offset.
+     *
+     * @param  mixed  $offset
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->values[$offset], static::$relations[$offset]);
     }
 }
