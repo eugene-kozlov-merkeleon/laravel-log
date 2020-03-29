@@ -18,6 +18,8 @@ class ElasticSearchLogDriver extends LogDriver
             $this->getTableName(),
             [$this, 'prepareHit']
         );
+
+        $this->elasticSearchModel->setDefaultSorting($logClassName::getDefaultSorting());
     }
 
     public function orderBy($orderField, $orderDirection)

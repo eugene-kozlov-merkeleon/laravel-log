@@ -15,6 +15,7 @@ abstract class Log implements \ArrayAccess
         'created_at' => 'datetime',
     ];
 
+    protected static $defaultSorting   = ['uuid:asc'];
     protected static $customAttributes = [];
 
     protected static $rules = [];
@@ -59,6 +60,11 @@ abstract class Log implements \ArrayAccess
         return static::$table;
     }
 
+    public static function getDefaultSorting()
+    {
+        return static::$defaultSorting;
+    }
+
     public static function getAttributes()
     {
         return array_merge(
@@ -76,6 +82,18 @@ abstract class Log implements \ArrayAccess
     {
         return $this->getAttribute($name);
     }
+
+    public function __set($name, $value)
+    {
+        $this->setAttribute($name, $value);
+    }
+
+    public function __isset($name)
+    {
+        return array_key_exists($name, $this->values)
+            || array_key_exists($name, static::$relations);
+    }
+
 
     /**
      * @param $name
@@ -178,18 +196,18 @@ abstract class Log implements \ArrayAccess
     /**
      * Determine if the given attribute exists.
      *
-     * @param  mixed  $offset
+     * @param  mixed $offset
      * @return bool
      */
     public function offsetExists($offset)
     {
-        return ! is_null($this->getAttribute($offset));
+        return !is_null($this->getAttribute($offset));
     }
 
     /**
      * Get the value for a given offset.
      *
-     * @param  mixed  $offset
+     * @param  mixed $offset
      * @return mixed
      */
     public function offsetGet($offset)
@@ -200,8 +218,8 @@ abstract class Log implements \ArrayAccess
     /**
      * Set the value for a given offset.
      *
-     * @param  mixed  $offset
-     * @param  mixed  $value
+     * @param  mixed $offset
+     * @param  mixed $value
      * @return void
      */
     public function offsetSet($offset, $value)
@@ -212,7 +230,7 @@ abstract class Log implements \ArrayAccess
     /**
      * Unset the value for a given offset.
      *
-     * @param  mixed  $offset
+     * @param  mixed $offset
      * @return void
      */
     public function offsetUnset($offset)
