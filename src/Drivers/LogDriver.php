@@ -15,15 +15,15 @@ use Ramsey\Uuid\Uuid;
 abstract class LogDriver
 {
     protected $logClassName;
-    protected $logFile;
     protected $collectionCallbacks;
 
     abstract protected function saveToDb($row);
 
-    public function __construct($logClassName, $logFile = null)
+    abstract public function bulkSaveToDb(array $rows);
+
+    public function __construct($logClassName)
     {
         $this->logClassName = $logClassName;
-        $this->logFile      = $logFile;
     }
 
     protected function getTableName()
@@ -39,7 +39,7 @@ abstract class LogDriver
                         ));
     }
 
-    protected function prepareValues(Log $log)
+    public function prepareValues(Log $log)
     {
         $values = $log->getValues();
 
@@ -47,7 +47,8 @@ abstract class LogDriver
 
         foreach ($attributes as $key => $cast)
         {
-            if ($value = $this->prapareValue($key, array_get($values, $key), $cast))
+            $value = $this->prapareValue($key, array_get($values, $key), $cast);
+            if (!is_null($value))
             {
                 $values[$key] = $value;
             }
@@ -85,19 +86,11 @@ abstract class LogDriver
         return json_encode($value);
     }
 
-    public function makeLog($data)
-    {
-        $log = $this->newLog($data);
-
-        return $this->save($log);
-    }
-
     public function save(Log $log)
     {
-        $this->saveToFile($log);
         $values = $this->prepareValues($log);
 
-        return  $this->saveToDb($values);
+        return $this->saveToDb($values);
     }
 
     public function newLog(array $data)
@@ -232,20 +225,6 @@ abstract class LogDriver
         return preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $value);
     }
 
-    protected function saveToFile(Log $log)
-    {
-        if (!$this->logFile)
-        {
-            return;
-        }
-
-        file_put_contents(
-            $this->logFile,
-            json_encode($log->toLogFileArray()) . "\n",
-            FILE_APPEND
-        );
-    }
-
     public function with($arguments)
     {
         if (!is_array($arguments))
@@ -288,7 +267,8 @@ abstract class LogDriver
             function (Collection $collection) use ($relationKey, $relation) {
                 $foreignIds = $collection->map(function ($item) use ($relation) {
                     return $item->{$relation['foreign_id']};
-                })->toArray();
+                })
+                                         ->toArray();
 
                 $relationList = $relation['class']::whereIn($relation['local_id'], $foreignIds)
                                                   ->get()

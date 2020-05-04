@@ -28,10 +28,15 @@ First, require the package using Composer:
     - Point the driver (mysql or elastic)
     - If you want to duplicate your logs to files you should point the path to log file.
     
+0. If you want save your logs to buffer and then bulk write all logs from buffer to storage
+    - Add  buffer directory path to the merkeleon_log.php config. Buffer directory should be writable     
+    - You should empty your buffer by calling command
+     `php artisan merkeleon:log:bulk-insert-to-storage {logName}`
 
-    ###Example:
+    
+###Example:
           
-    ```
+    
     <?php
     
     namespace App\Models;
@@ -70,9 +75,9 @@ First, require the package using Composer:
         }
     
     }
-    ```
+   
+##    
     
-    ```
         <?php
         
         return [
@@ -82,8 +87,7 @@ First, require the package using Composer:
                 'log_file' => '/var/www/logs/audit_log.log'
             ],
         ];
-
-    ```
+  
 
 ## Usage
 
@@ -110,4 +114,44 @@ First, require the package using Composer:
     $auditLogRepository->where('user_id', 1)->orderBy('event_type', 'asc')->paginate(10);
    
     $auditLogRepository->where('user_id', 1)->get();
+    
+    
+##Examples
+    
+        $auditLogRepository = LogRepository::make('audit_log');
+    
+        $auditLogRepository->write([
+            'user_id'         => 1,
+            'event_type'      => 'user_banned',
+            'user_id_related' => 2,
+            'data'            => [
+                'user'         => [
+                    'id'   => '1',
+                    'name' => 'Admin User',
+                ],
+                'user_related' => [
+                    'id'   => '2',
+                    'name' => 'Test user'
+                ]
+            ]
+        ], true);
+        
+        $auditLogRepository->write([
+            'user_id'         => 1,
+            'event_type'      => 'user_login',
+            'data'            => [
+                'user'         => [
+                    'id'   => '1',
+                    'name' => 'Admin User',
+                ]
+            ]
+        ], true);
+    
+        // call command `php artisan merkeleon:log:bulk-insert-to-storage audit_log`
+        
+        $auditLogRepository->where('user_id', 1)->orderBy('event_type', 'asc')->paginate(10);
+       
+        $auditLogRepository->where('user_id', 1)->get();
+    
+    
     
