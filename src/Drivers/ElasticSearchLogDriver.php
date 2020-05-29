@@ -5,14 +5,15 @@ namespace Merkeleon\Log\Drivers;
 
 use Merkeleon\ElasticReader\Elastic\SearchModelNew;
 use Merkeleon\Log\Exceptions\LogException;
+use Merkeleon\Log\Model\Log;
 
 class ElasticSearchLogDriver extends LogDriver
 {
     protected $elasticSearchModel;
 
-    public function __construct($logClassName, $logFile = null)
+    public function __construct($logClassName)
     {
-        parent::__construct($logClassName, $logFile);
+        parent::__construct($logClassName);
 
         $this->elasticSearchModel = new SearchModelNew(
             $this->getTableName(),
@@ -34,6 +35,11 @@ class ElasticSearchLogDriver extends LogDriver
         return $this->elasticSearchModel->create($row);
     }
 
+    public function bulkSaveToDb(array $rows)
+    {
+        return $this->elasticSearchModel->bulkCreate($rows);
+    }
+
     public function query()
     {
         return $this->elasticSearchModel->query();
@@ -53,7 +59,7 @@ class ElasticSearchLogDriver extends LogDriver
 
         if (!is_callable([$this->query(), $name]))
         {
-            throw new LogException('Method' . $name .' doesn\'t exists in LogDriver');
+            throw new LogException('Method ' . $name . ' doesn\'t exists in LogDriver');
         }
 
         $this->query()
@@ -87,6 +93,7 @@ class ElasticSearchLogDriver extends LogDriver
 
     public function find($id)
     {
-        return $this->where('id', $id)->first();
+        return $this->where('id', $id)
+                    ->first();
     }
 }

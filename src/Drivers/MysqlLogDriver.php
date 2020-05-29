@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Merkeleon\Log\Exceptions\LogException;
+use Merkeleon\Log\Model\Log;
 
 class MysqlLogDriver extends LogDriver
 {
@@ -22,6 +23,31 @@ class MysqlLogDriver extends LogDriver
 
         return $lastInsertId;
 
+    }
+
+    public function bulkSaveToDb(array $rows)
+    {
+        $rows = $this->prepareBulkData($rows);
+
+        return DB::table($this->getTableName())->insert($rows);
+    }
+
+    protected function prepareBulkData(array $rows)
+    {
+        $attributes = $this->logClassName::getAttributesWithCasts();
+
+        foreach ($rows as $index => $row)
+        {
+            foreach ($attributes as $key => $value)
+            {
+                if (!array_key_exists($key, $row))
+                {
+                    $rows[$index][$key] = null;
+                }
+            }
+        }
+
+        return $rows;
     }
 
     public function query()
