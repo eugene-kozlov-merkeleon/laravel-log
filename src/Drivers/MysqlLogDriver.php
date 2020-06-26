@@ -205,6 +205,14 @@ class MysqlLogDriver extends LogDriver
         return $this;
     }
 
+    public function whereRaw($query)
+    {
+        $this->query()
+             ->whereRaw($query);
+
+        return $this;
+    }
+
     protected function prepareLog($row)
     {
         return $this->newLog($row);
