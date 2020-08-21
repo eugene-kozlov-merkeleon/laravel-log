@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Container\Container;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Arr;
 use Merkeleon\Log\Exceptions\LogException;
 use Merkeleon\Log\Model\Log;
 use Ramsey\Uuid\Uuid;
@@ -47,7 +48,7 @@ abstract class LogDriver
 
         foreach ($attributes as $key => $cast)
         {
-            $value = $this->prapareValue($key, array_get($values, $key), $cast);
+            $value = $this->prapareValue($key, Arr::get($values, $key), $cast);
             if (!is_null($value))
             {
                 $values[$key] = $value;

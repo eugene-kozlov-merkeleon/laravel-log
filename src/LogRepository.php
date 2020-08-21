@@ -7,6 +7,7 @@ use Merkeleon\Log\Drivers\LogDriver;
 use Merkeleon\Log\Drivers\MysqlLogDriver;
 use Merkeleon\Log\Exceptions\LogException;
 use Merkeleon\Log\Model\Log;
+use Illuminate\Support\Arr;
 
 class LogRepository
 {
@@ -41,7 +42,7 @@ class LogRepository
 
         $this->logClassName = $config['class'];
 
-        $this->logFile = array_get($config, 'log_file');
+        $this->logFile = Arr::get($config, 'log_file');
     }
 
     public static function make($logName)
@@ -204,7 +205,7 @@ class LogRepository
     {
         if (!$this->bufferDir)
         {
-            $this->bufferDir = array_get($this->config, 'buffer_dir');
+            $this->bufferDir = Arr::get($this->config, 'buffer_dir');
         }
 
         if (!$this->bufferDir || !is_dir($this->bufferDir))

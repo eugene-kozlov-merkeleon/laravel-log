@@ -4,6 +4,7 @@ namespace Merkeleon\Log\Model;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use Merkeleon\Log\Exceptions\LogException;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
@@ -107,13 +108,13 @@ abstract class Log implements \ArrayAccess
             throw new LogException('Attribute ' . $name . ' not exists');
         }
 
-        if (array_get($this->values, $name) === null
+        if (Arr::get($this->values, $name) === null
             && array_key_exists($name, static::$relations)
         )
         {
             $relation = static::$relations[$name];
 
-            $relationId = array_get($this->values, $relation['foreign_id']);
+            $relationId = Arr::get($this->values, $relation['foreign_id']);
             if ($relationId)
             {
                 $this->values[$name] = $relation['class']::where($relation['local_id'], $relationId)
@@ -121,7 +122,7 @@ abstract class Log implements \ArrayAccess
             }
         }
 
-        return array_get($this->values, $name);
+        return Arr::get($this->values, $name);
     }
 
     public function getValues()

@@ -6,6 +6,7 @@ namespace Merkeleon\Log\Drivers;
 use Merkeleon\ElasticReader\Elastic\SearchModelNew;
 use Merkeleon\Log\Exceptions\LogException;
 use Merkeleon\Log\Model\Log;
+use Illuminate\Support\Arr;
 
 class ElasticSearchLogDriver extends LogDriver
 {
@@ -70,7 +71,7 @@ class ElasticSearchLogDriver extends LogDriver
 
     public function prepareHit($hit)
     {
-        return $this->newLog(array_get($hit, '_source'));
+        return $this->newLog(Arr::get($hit, '_source'));
     }
 
     public function matchSubString($name, $value, $searchInObject)
