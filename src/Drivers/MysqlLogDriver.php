@@ -6,6 +6,7 @@ namespace Merkeleon\Log\Drivers;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
 use Merkeleon\Log\Exceptions\LogException;
 use Merkeleon\Log\Model\Log;
 
@@ -192,7 +193,7 @@ class MysqlLogDriver extends LogDriver
     {
         $this->query()
              ->where(function ($query) use ($conditions) {
-                 $firstKey   = array_first(array_keys($conditions));
+                 $firstKey   = Arr::first(array_keys($conditions));
                  $firstValue = array_shift($conditions);
                  $query->where($firstKey, $firstValue);
 
