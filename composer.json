@@ -2,7 +2,7 @@
   "name": "merkeleon/laravel-log",
   "description": "Laravel Audit Log",
   "require": {
-    "php": "^7.1.3",
+    "php": ">=7.1",
     "laravel/framework": "^5.7|6.*|7.*|8.*",
     "ramsey/uuid": "^4.1"
   },
