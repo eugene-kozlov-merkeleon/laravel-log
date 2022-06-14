@@ -3,7 +3,7 @@
   "description": "Laravel Audit Log",
   "require": {
     "php": ">=7.1",
-    "laravel/framework": "^5.7|6.*|7.*|8.*",
+    "laravel/framework": ">=5.0",
     "ramsey/uuid": "^4.1"
   },
   "require-dev": {
